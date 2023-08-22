@@ -30,7 +30,7 @@ public class SubmarineUpgrades : MonoBehaviour
     }
 }
 
-[CustomEditor(typeof(SubmarineUpgrades))]
+[CustomEditor(typeof(SubmarineUpgrades)), CanEditMultipleObjects]
 public class SubmarineUpgradesEditor : Editor
 {
     private SubmarineUpgrades _submarineUpgrades;

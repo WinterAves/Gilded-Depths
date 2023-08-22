@@ -10,12 +10,12 @@ public class SubmarineMovement : MonoBehaviour
     [SerializeField] private float _decelerationSpeed = 2f;
     [SerializeField] private float _rotationSpeed = 3f;
 
-    private Rigidbody _rigidBody;
+    private Rigidbody2D _rigidBody;
     private bool _accelerating = false;
 
     private void Awake()
     {
-        _rigidBody = GetComponent<Rigidbody>();
+        _rigidBody = GetComponent<Rigidbody2D>();
     }
 
     void Update()
@@ -34,10 +34,10 @@ public class SubmarineMovement : MonoBehaviour
         if (Input.GetKey(KeyCode.Mouse0))
         {
             mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector3 direction = new Vector3(mousePos.x, mousePos.y, 0f) - _rigidBody.position;
+            Vector3 direction = new Vector2(mousePos.x, mousePos.y) - _rigidBody.position;
             direction = direction.normalized;
 
-            _rigidBody.AddForce(direction * _force * Time.deltaTime, ForceMode.Force);
+            _rigidBody.AddForce(direction * _force * Time.deltaTime, ForceMode2D.Force);
             _rigidBody.velocity = Vector3.ClampMagnitude(_rigidBody.velocity * _accelerationSpeed, _maxSpeed);
             _accelerating = true;
             Debug.DrawRay(transform.position, direction * 5f, Color.red);
