@@ -27,6 +27,18 @@ namespace Winter.FishAI
 
         public NavMeshAgent agent;
 
+        public float patrolDistance;
+
+        private int patrolDirSwitch = 1;
+
+        public MovementType movementType = MovementType.StraightHorizontal;
+
+        public Vector3 currentDestination;
+
+        private float timer = 0f;
+
+        private float currentNoise;
+
         // Start is called before the first frame update
         void Start()
         {
@@ -105,22 +117,72 @@ namespace Winter.FishAI
 
         private void StraightHorizontalMove()
         {
+            if (!agent.hasPath || Mathf.Approximately(agent.remainingDistance, agent.stoppingDistance))
+            {
+                patrolDirSwitch *= -1;
+                var destination = transform.position + Vector3.right * patrolDistance * patrolDirSwitch;
+                agent.SetDestination(destination);
+            }
             
         }
 
         private void StraightVerticalMove()
         {
-            
+            if (!agent.hasPath || Mathf.Approximately(agent.remainingDistance, agent.stoppingDistance))
+            {
+                patrolDirSwitch *= -1;
+                var destination = transform.position + Vector3.up * patrolDistance * patrolDirSwitch;
+                agent.SetDestination(destination);
+            }
+
         }
 
         private void RSinMove(float ampl, float omega, float noise)
         {
-            
+            if (!agent.hasPath || Mathf.Approximately(agent.remainingDistance, agent.stoppingDistance))
+            {
+                patrolDirSwitch *= -1;
+                currentDestination = transform.position + Vector3.right * patrolDistance * patrolDirSwitch;
+                agent.SetDestination(currentDestination);
+            }
+
+            else
+            {
+                Debug.Log("Improving");
+
+                timer += Time.deltaTime;
+
+                if(timer> 0.5f)
+                {
+                    currentNoise = UnityEngine.Random.Range(-noise, noise);
+                    timer = 0f;
+
+                }
+
+
+                var destination = currentDestination + new Vector3(0, Mathf.Sin(omega * Time.time) * ampl - currentNoise , 0);
+                
+                agent.SetDestination(destination);
+            }
         }
+
 
         private void SinMove(float ampl, float omega)
         {
-            
+
+            if (!agent.hasPath || Mathf.Approximately(agent.remainingDistance, agent.stoppingDistance))
+            {
+                patrolDirSwitch *= -1;
+                currentDestination = transform.position + Vector3.right * patrolDistance * patrolDirSwitch;
+                agent.SetDestination(currentDestination);
+            }
+
+            else
+            {
+                Debug.Log("Improving");
+                var destination = currentDestination + new Vector3(0, Mathf.Sin(omega * Time.time) * ampl, 0);
+                agent.SetDestination(destination);
+            }
         }
 
         private void StandStill()

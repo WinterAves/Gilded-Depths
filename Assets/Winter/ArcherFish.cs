@@ -9,30 +9,23 @@ namespace Winter.FishAI
     {
         protected override void OnStart()
         {
-            base.OnStart();
-
             agent.updateRotation = false;
         }
 
         protected override void OnChase()
         {
-            base.OnChase();
             GetComponentInChildren<SpriteRenderer>().color = Color.red;
             agent.SetDestination(refPlayer.position);
         }
 
         protected override void OnAttack()
         {
-            base.OnAttack();
-
             GetComponentInChildren<SpriteRenderer>().color = Color.white;
         }
 
         protected override void OnIdle()
         {
-            base.OnIdle();
-
-            GetComponentInChildren<SpriteRenderer>().color = Color.black;
+            Move(movementType, 2f, 0.001f, 5f);
         }
     }
 }
