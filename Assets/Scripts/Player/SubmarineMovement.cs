@@ -23,6 +23,7 @@ public class SubmarineMovement : MonoBehaviour
         Move();
         Decelerate();
         Rotate();
+        Debug.Log(_rigidBody.velocity);
     }
 
     private void Move()
@@ -38,7 +39,12 @@ public class SubmarineMovement : MonoBehaviour
             direction = direction.normalized;
 
             _rigidBody.AddForce(direction * _force * Time.deltaTime, ForceMode2D.Force);
-            _rigidBody.velocity = Vector3.ClampMagnitude(_rigidBody.velocity * _accelerationSpeed, _maxSpeed);
+            
+            if(_rigidBody.velocity.magnitude > _maxSpeed)
+            {
+                _rigidBody.velocity = _rigidBody.velocity.normalized * _maxSpeed;
+            }
+
             _accelerating = true;
             Debug.DrawRay(transform.position, direction * 5f, Color.red);
         }

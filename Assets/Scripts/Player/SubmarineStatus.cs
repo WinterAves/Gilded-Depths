@@ -83,6 +83,11 @@ public class SubmarineStatus : MonoBehaviour
         {
             Debug.Log("Crashed Into Obstacle");
         }
+        
+        if (collision.gameObject.tag == "Shop")
+        {
+            collision.gameObject.GetComponent<Shop>().SlideInPanel();
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
