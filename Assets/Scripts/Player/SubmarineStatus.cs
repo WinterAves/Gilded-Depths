@@ -18,12 +18,20 @@ public class SubmarineStatus : MonoBehaviour
     [SerializeField] private float _oxygenRefillSpeed = 10f;
     private float _currentOxygen = 100f;
     private bool _refillingOxygen = false;
+    private bool _shopping = false;
+
+    private SubmarineMovement _movement;
+
+    private void Awake()
+    {
+        _movement = GetComponent<SubmarineMovement>();
+    }
 
     void Update()
     {
-        if (!_refillingOxygen)
+        if (!_refillingOxygen && !_shopping)
             DecreaseOxygen();
-        else
+        else if (_refillingOxygen)
             RefillOxygen();
     }
 
@@ -49,7 +57,7 @@ public class SubmarineStatus : MonoBehaviour
     #endregion
 
     #region Upgrades
-    private void UpgradeSubmarine(SubmarineUpgrades upgrade)
+    public void UpgradeSubmarine(SubmarineUpgrades upgrade)
     {
         switch(upgrade._UpgradeType)
         {
@@ -74,6 +82,19 @@ public class SubmarineStatus : MonoBehaviour
                 break;
         }
     }
+
+    private void SetShopping()
+    {
+        _shopping = true;
+        _movement.SetShopping();
+    }
+
+    // Resumes depletion of oxygen
+    public void UnsetShopping()
+    {
+        _shopping = false;
+        _movement.UnsetShopping();
+    }
     #endregion
 
     #region Collisions
@@ -87,6 +108,7 @@ public class SubmarineStatus : MonoBehaviour
         if (collision.gameObject.tag == "Shop")
         {
             collision.gameObject.GetComponent<Shop>().SlideInPanel();
+            SetShopping();
         }
     }
 

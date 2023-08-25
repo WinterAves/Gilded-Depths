@@ -20,10 +20,12 @@ public class Shop : MonoBehaviour
     public void SlideInPanel()
     {
         _animator.SetTrigger("SlideIn");
+        _panelIn = true;
     }
 
     public void SlideOutPanel()
     {
         _animator.SetTrigger("SlideOut");
+        _panelIn = false;
     }
 }

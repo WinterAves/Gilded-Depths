@@ -12,6 +12,7 @@ public class SubmarineMovement : MonoBehaviour
 
     private Rigidbody2D _rigidBody;
     private bool _accelerating = false;
+    private bool _shopping = false;
 
     private void Awake()
     {
@@ -20,10 +21,12 @@ public class SubmarineMovement : MonoBehaviour
 
     void Update()
     {
-        Move();
-        Decelerate();
-        Rotate();
-        Debug.Log(_rigidBody.velocity);
+        if(!_shopping)
+        {
+            Move();
+            Decelerate();
+            Rotate();
+        }
     }
 
     private void Move()
@@ -71,4 +74,16 @@ public class SubmarineMovement : MonoBehaviour
             transform.localEulerAngles = new Vector3(0f, Mathf.Clamp(transform.eulerAngles.y + _rotationSpeed * Time.deltaTime, 0f, 180f), 0f);
         }
     }
+
+    #region Shopping
+    public void SetShopping()
+    {
+        _shopping = true;
+    }
+
+    public void UnsetShopping()
+    {
+        _shopping = false;
+    }
+    #endregion
 }
