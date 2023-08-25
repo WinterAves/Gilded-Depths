@@ -4,13 +4,15 @@ using UnityEngine;
 using UnityEngine.UI;
 public class SubmarineStatus : MonoBehaviour
 {
+    public static SubmarineStatus Instance { get; private set; }
+
     [SerializeField] private Image _oxygenBar;
 
     [Header("Upgrades")]
     [SerializeField] private float _hullStrength = 20f;     // Health?
     [SerializeField] private float _maxOxygen = 100f;
     [SerializeField] private float _sonarRange = 10f;
-    [SerializeField] private float _maxSpeed = 3f;
+    //[SerializeField] private float _maxSpeed = 3f;
 
     [Header("Oxygen")]
     [SerializeField] private Gradient _gradient = new Gradient();
@@ -25,6 +27,11 @@ public class SubmarineStatus : MonoBehaviour
     private void Awake()
     {
         _movement = GetComponent<SubmarineMovement>();
+
+        if(Instance == null)
+        {
+            Instance = this;
+        }
     }
 
     void Update()
@@ -35,10 +42,17 @@ public class SubmarineStatus : MonoBehaviour
             RefillOxygen();
     }
 
+    #region Hull
+    public void TakeDamage(float damage)
+    {
+        _hullStrength -= damage;
+    }
+    #endregion
+
     #region Oxygen
     private void RefillOxygen()
     {
-        _currentOxygen = Mathf.Clamp(_currentOxygen + Time.deltaTime * _oxygenRefillSpeed, 0f, _maxOxygen);
+        _currentOxygen = Mathf.Clamp(_currentOxygen + (_maxOxygen / 100) * Time.deltaTime * _oxygenRefillSpeed, 0f, _maxOxygen);
         UpdateOxygenBar();
     }
 
@@ -77,8 +91,8 @@ public class SubmarineStatus : MonoBehaviour
                 break;
 
             case SubmarineUpgrades.UpgradeType.SpeedUpgrade:
-                _maxSpeed += upgrade._SpeedUpgradeAmount;
-                Debug.Log($"Speed upgraded, status: {_maxSpeed}");
+                float newSpeed = _movement.UpgradeSpeed(upgrade._SpeedUpgradeAmount);
+                Debug.Log($"Speed upgraded, status: {newSpeed}");
                 break;
         }
     }

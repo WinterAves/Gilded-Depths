@@ -75,6 +75,13 @@ public class SubmarineMovement : MonoBehaviour
         }
     }
 
+    public float UpgradeSpeed(float upgrade)
+    {
+        _maxSpeed += upgrade;
+        _accelerationSpeed += upgrade * 0.4f;
+        return _maxSpeed;
+    }
+
     #region Shopping
     public void SetShopping()
     {
