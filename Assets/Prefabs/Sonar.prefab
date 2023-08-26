@@ -120,7 +120,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _blip: {fileID: 3017701198319855580}
-  _expansionSpeed: 5
+  _expansionSpeed: 75
   _offset: {x: 0, y: 0.7, z: 0}
 --- !u!82 &3017701198319855580
 AudioSource:

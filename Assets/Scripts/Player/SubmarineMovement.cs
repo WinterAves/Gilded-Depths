@@ -92,5 +92,10 @@ public class SubmarineMovement : MonoBehaviour
     {
         _shopping = false;
     }
+
+    public void Stop()
+    {
+        _rigidBody.velocity = Vector3.zero;
+    }
     #endregion
 }

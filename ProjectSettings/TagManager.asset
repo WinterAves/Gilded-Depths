@@ -8,6 +8,7 @@ TagManager:
   - Obstacle
   - OxygenRefill
   - Shop
+  - Treasure
   layers:
   - Default
   - TransparentFX

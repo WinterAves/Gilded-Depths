@@ -2,11 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
+
 public class SubmarineStatus : MonoBehaviour
 {
     public static SubmarineStatus Instance { get; private set; }
 
-    [SerializeField] private Image _oxygenBar;
+    [SerializeField] private TextMeshProUGUI _hullDisplay;
+    [SerializeField] private Slider _oxygenMeter;
     [SerializeField] private GameObject _sonar;
     [SerializeField] private Transform _childTransform;
 
@@ -23,6 +26,9 @@ public class SubmarineStatus : MonoBehaviour
     private bool _refillingOxygen = false;
     private bool _shopping = false;
 
+    [Space]
+    [SerializeField] private int _money = 100;
+
     private SubmarineMovement _movement;
 
     private void Awake()
@@ -33,6 +39,8 @@ public class SubmarineStatus : MonoBehaviour
         {
             Instance = this;
         }
+
+        UpdateHull();
     }
 
     void Update()
@@ -50,7 +58,14 @@ public class SubmarineStatus : MonoBehaviour
     public void TakeDamage(float damage)
     {
         _hullStrength -= damage;
+        UpdateHull();
     }
+
+    private void UpdateHull()
+    {
+        _hullDisplay.text = $"Hull: {_hullStrength}";
+    }
+
     #endregion
 
     #region Oxygen
@@ -69,8 +84,7 @@ public class SubmarineStatus : MonoBehaviour
     private void UpdateOxygenBar()
     {
         float percentage = _currentOxygen / _maxOxygen;
-        _oxygenBar.fillAmount = percentage;
-        _oxygenBar.color = _gradient.Evaluate(percentage);
+        _oxygenMeter.value = percentage;
     }
     #endregion
 
@@ -89,11 +103,13 @@ public class SubmarineStatus : MonoBehaviour
         {
             case SubmarineUpgrades.UpgradeType.HullUpgrade:
                 _hullStrength += upgrade._HullUpgradeAmount;
+                UpdateHull();
                 Debug.Log($"Hull upgraded, status: {_hullStrength}");
                 break;
 
             case SubmarineUpgrades.UpgradeType.OxygenUpgrade:
                 _maxOxygen += upgrade._OxygenUpgradeAmount;
+                UpdateOxygenBar();
                 Debug.Log($"Oxygen tank upgraded, status: {_maxOxygen}");
                 break;
 
@@ -134,6 +150,7 @@ public class SubmarineStatus : MonoBehaviour
         if (collision.gameObject.tag == "Shop")
         {
             collision.gameObject.GetComponent<Shop>().SlideInPanel();
+            _movement.Stop();
             SetShopping();
         }
     }

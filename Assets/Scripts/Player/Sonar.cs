@@ -30,7 +30,7 @@ public class Sonar : MonoBehaviour
     {
         if (!_expand) return;
 
-        _expansion += Time.deltaTime * _expansionSpeed;
+        _expansion += (_expansionLimit / 100) * Time.deltaTime * _expansionSpeed;
         transform.localScale = new Vector3(_expansion, _expansion, 1f);
 
         if (_expansion >= _expansionLimit)

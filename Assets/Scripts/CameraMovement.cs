@@ -4,7 +4,11 @@ using UnityEngine;
 
 public class CameraMovement : MonoBehaviour
 {
-    Camera _mainCam;
+    [SerializeField] private Rigidbody2D _submarine;
+    [SerializeField] private Vector3 _offset;
+    [SerializeField][Range(0f, 1f)] private float _smoothing;
+
+    private Camera _mainCam;
 
     void Start()
     {
@@ -12,13 +16,14 @@ public class CameraMovement : MonoBehaviour
     }
 
     
-    void Update()
+    void FixedUpdate()
     {
-        
+        MoveCamera();
     }
 
     private void MoveCamera()
     {
-
+        Vector3 submarineDestination = _submarine.position + _submarine.velocity / 2f;
+        transform.position = Vector3.Lerp(transform.position, submarineDestination, _smoothing) + _offset;
     }
 }

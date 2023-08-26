@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class Shop : MonoBehaviour
 {
-    [SerializeField] private Canvas _shopCanvas;
     [SerializeField] private Image _panel;
 
     private Animator _animator;
