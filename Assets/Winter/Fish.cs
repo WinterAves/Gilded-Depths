@@ -12,7 +12,7 @@ namespace Winter.FishAI
         public enum State { Idle, Chase, Attack }
         public State state;
 
-        public Rigidbody rb;
+        public Rigidbody2D rb;
 
         public float speed;
 
@@ -39,12 +39,27 @@ namespace Winter.FishAI
 
         private float currentNoise;
 
+        public LayerMask fishMask;
+
+        public Transform graphics;
+
+        private Vector3 prevPosition;
+
+        private bool isChasing;
+
+        private float currentAgroAmt;
+
+        public float rotationSpeed;
+
         // Start is called before the first frame update
         void Start()
         {
-            rb = GetComponent<Rigidbody>();
+            rb = GetComponent<Rigidbody2D>();
             state = State.Idle;
             agent = GetComponent<NavMeshAgent>();
+            agent.updateRotation = false;
+            currentAgroAmt = minAggroDistance;
+            prevPosition = transform.position;
             OnStart();
         }
 
@@ -54,7 +69,25 @@ namespace Winter.FishAI
         {
             float distance = Vector2.Distance(new Vector2(transform.position.x, transform.position.y), new Vector2(refPlayer.position.x, refPlayer.position.y));
             bool canAttack = distance < minAttackDistance;
-            bool canChase = distance > minAggroDistance && distance < maxAggroDistance && !canAttack;
+            //bool canChase = distance > minAggroDistance && distance < maxAggroDistance && !canAttack;
+            isChasing = state == State.Chase ? true : false;
+            bool canChase = distance < currentAgroAmt && !canAttack;
+           
+            if(Mathf.Approximately(currentAgroAmt, minAggroDistance) && state == State.Chase)
+            {
+                currentAgroAmt = maxAggroDistance;
+            }
+
+            if(state != State.Attack)
+            {
+                agent.enabled = true;
+                agent.updatePosition = true;
+            }
+
+            if(state != State.Chase)
+            {
+                currentAgroAmt = minAggroDistance;
+            }
 
             if (!canChase && !canAttack)
                 state = State.Idle;
@@ -75,10 +108,31 @@ namespace Winter.FishAI
                     OnAttack();
                     break;
             }
+
+            //Facing dir of motion
+
+            if (agent.hasPath)
+            {
+                var dir = agent.nextPosition - transform.position;
+                transform.up = dir;
+            }
+             
         }
 
         private void FixedUpdate()
         {
+            
+
+            if (state != State.Attack)
+            {
+                rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezePositionY | RigidbodyConstraints2D.FreezeRotation;
+            }
+            else
+            {
+                rb.constraints = RigidbodyConstraints2D.None;
+                rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+            }
+
             switch (state)
             {
                 case State.Idle:
@@ -91,10 +145,34 @@ namespace Winter.FishAI
                     OnAttackFixed();
                     break;
             }
+
+
+        }
+
+
+        public void UpdateGraphicsRotation()
+        {
+            var dir = transform.position - prevPosition;
+            //var rot = Quaternion.LookRotation(dir);
+
+            if(dir != Vector3.zero)
+            {
+                var rot = Quaternion.Lerp(graphics.rotation, Quaternion.LookRotation(dir), Time.deltaTime * rotationSpeed * Time.deltaTime);
+                graphics.rotation = rot;
+            }
+            
         }
 
         protected void Move(MovementType mType, float amplitude = 0f, float omega = 0f, float noise =0f)
         {
+            agent.speed = speed;
+
+            //ROtate graphics based on dir of motion
+
+            UpdateGraphicsRotation();
+            
+            
+
             switch (mType)
             {
                 case MovementType.Stationary:
@@ -224,6 +302,22 @@ namespace Winter.FishAI
 
         }
 
+        private void LateUpdate()
+        {
+            if(transform.position != prevPosition)
+                prevPosition = transform.position;
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            Gizmos.color = Color.red;
+
+            Gizmos.DrawWireSphere(transform.position, minAggroDistance);
+
+            Gizmos.color = Color.green;
+
+            Gizmos.DrawWireSphere(transform.position, maxAggroDistance);
+        }
     }
 }
 
