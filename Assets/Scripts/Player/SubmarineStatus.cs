@@ -7,12 +7,13 @@ public class SubmarineStatus : MonoBehaviour
     public static SubmarineStatus Instance { get; private set; }
 
     [SerializeField] private Image _oxygenBar;
+    [SerializeField] private GameObject _sonar;
+    [SerializeField] private Transform _childTransform;
 
     [Header("Upgrades")]
     [SerializeField] private float _hullStrength = 20f;     // Health?
     [SerializeField] private float _maxOxygen = 100f;
     [SerializeField] private float _sonarRange = 10f;
-    //[SerializeField] private float _maxSpeed = 3f;
 
     [Header("Oxygen")]
     [SerializeField] private Gradient _gradient = new Gradient();
@@ -40,6 +41,9 @@ public class SubmarineStatus : MonoBehaviour
             DecreaseOxygen();
         else if (_refillingOxygen)
             RefillOxygen();
+
+        if (Input.GetKeyDown(KeyCode.Mouse1))
+            ActivateSonar();
     }
 
     #region Hull
@@ -67,6 +71,14 @@ public class SubmarineStatus : MonoBehaviour
         float percentage = _currentOxygen / _maxOxygen;
         _oxygenBar.fillAmount = percentage;
         _oxygenBar.color = _gradient.Evaluate(percentage);
+    }
+    #endregion
+
+    #region Sonar
+    private void ActivateSonar()
+    {
+        GameObject newSonar = Instantiate(_sonar, transform.position, Quaternion.identity);
+        newSonar.GetComponent<Sonar>().ActivateSonar(_childTransform.position, _sonarRange);
     }
     #endregion
 

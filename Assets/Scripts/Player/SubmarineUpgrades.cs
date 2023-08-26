@@ -18,16 +18,6 @@ public class SubmarineUpgrades : MonoBehaviour
     public float _OxygenUpgradeAmount;
     public float _SonarUpgradeAmount;
     public float _SpeedUpgradeAmount;
-
-    void Start()
-    {
-        
-    }
-
-    void Update()
-    {
-        
-    }
 }
 
 [CustomEditor(typeof(SubmarineUpgrades)), CanEditMultipleObjects]
