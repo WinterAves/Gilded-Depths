@@ -9,6 +9,7 @@ public class SubmarineStatus : MonoBehaviour
     public static SubmarineStatus Instance { get; private set; }
 
     [SerializeField] private TextMeshProUGUI _hullDisplay;
+    [SerializeField] private TextMeshProUGUI _moneyDisplay;
     [SerializeField] private Slider _oxygenMeter;
     [SerializeField] private GameObject _sonar;
     [SerializeField] private Transform _childTransform;
@@ -26,8 +27,11 @@ public class SubmarineStatus : MonoBehaviour
     private bool _refillingOxygen = false;
     private bool _shopping = false;
 
+    private GameObject _currentSonar;
+
     [Space]
     [SerializeField] private int _money = 100;
+    [SerializeField] private int _moneyIncreaseAmount = 50;
 
     private SubmarineMovement _movement;
 
@@ -36,11 +40,10 @@ public class SubmarineStatus : MonoBehaviour
         _movement = GetComponent<SubmarineMovement>();
 
         if(Instance == null)
-        {
             Instance = this;
-        }
 
         UpdateHull();
+        UpdateMoney();
     }
 
     void Update()
@@ -54,10 +57,19 @@ public class SubmarineStatus : MonoBehaviour
             ActivateSonar();
     }
 
+    public void Die()
+    {
+
+    }
+
     #region Hull
     public void TakeDamage(float damage)
     {
-        _hullStrength -= damage;
+        _hullStrength = Mathf.Clamp(_hullStrength - damage, 0, Mathf.Infinity);
+
+        if (_hullStrength == 0) 
+            Die();
+
         UpdateHull();
     }
 
@@ -78,6 +90,7 @@ public class SubmarineStatus : MonoBehaviour
     private void DecreaseOxygen()
     {
         _currentOxygen = Mathf.Clamp(_currentOxygen - Time.deltaTime * _oxygenDepletionSpeed, 0f, _maxOxygen);
+        if (_currentOxygen == 0) Die();
         UpdateOxygenBar();
     }
 
@@ -91,14 +104,20 @@ public class SubmarineStatus : MonoBehaviour
     #region Sonar
     private void ActivateSonar()
     {
-        GameObject newSonar = Instantiate(_sonar, transform.position, Quaternion.identity);
-        newSonar.GetComponent<Sonar>().ActivateSonar(_childTransform.position, _sonarRange);
+        if (_currentSonar != null) return;
+
+        _currentSonar = Instantiate(_sonar, transform.position, Quaternion.identity);
+        _currentSonar.GetComponent<Sonar>().ActivateSonar(_childTransform.position, _sonarRange);
     }
     #endregion
 
     #region Upgrades
     public void UpgradeSubmarine(SubmarineUpgrades upgrade)
     {
+        if (_money < upgrade._Cost) return;
+
+        DecreaseMoney(upgrade._Cost);
+
         switch(upgrade._UpgradeType)
         {
             case SubmarineUpgrades.UpgradeType.HullUpgrade:
@@ -137,6 +156,23 @@ public class SubmarineStatus : MonoBehaviour
         _shopping = false;
         _movement.UnsetShopping();
     }
+
+    private void AddMoney()
+    {
+        _money += _moneyIncreaseAmount;
+        UpdateMoney();
+    }
+
+    private void DecreaseMoney(int cost)
+    {
+        _money -= cost;
+        UpdateMoney();
+    }
+
+    private void UpdateMoney()
+    {
+        _moneyDisplay.text = $"Money: {_money}";
+    }
     #endregion
 
     #region Collisions
@@ -166,9 +202,18 @@ public class SubmarineStatus : MonoBehaviour
             Destroy(collision.gameObject);
         }
 
-        if(collision.gameObject.tag == "OxygenRefill")
+        if (collision.gameObject.tag == "OxygenRefill")
         {
             _refillingOxygen = true;
+        }
+
+        if (collision.gameObject.tag == "Treasure")
+        {
+            if(collision.GetComponent<Chest>().IsChestActivated())
+            {
+                Destroy(collision.gameObject);
+                AddMoney();
+            }
         }
     }
 

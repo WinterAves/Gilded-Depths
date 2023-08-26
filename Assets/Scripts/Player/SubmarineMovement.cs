@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class SubmarineMovement : MonoBehaviour
 {
+    [SerializeField] private Camera _mainCam;
     [SerializeField] private float _maxSpeed = 5f;
     [SerializeField] private float _force = 800f;
     [SerializeField] private float _accelerationSpeed = 2f;
@@ -13,6 +14,7 @@ public class SubmarineMovement : MonoBehaviour
     private Rigidbody2D _rigidBody;
     private bool _accelerating = false;
     private bool _shopping = false;
+    private bool _dead = false;
 
     private void Awake()
     {
@@ -21,7 +23,7 @@ public class SubmarineMovement : MonoBehaviour
 
     void Update()
     {
-        if(!_shopping)
+        if(!_shopping && !_dead)
         {
             Move();
             Decelerate();
@@ -33,11 +35,14 @@ public class SubmarineMovement : MonoBehaviour
     {
         Vector3 mousePos = Vector3.zero;
 
+        //Debug.Log(_rigidBody.velocity);
+
         _accelerating = false;
 
         if (Input.GetKey(KeyCode.Mouse0))
         {
-            mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            mousePos = _mainCam.ScreenToWorldPoint(Input.mousePosition);
+            Debug.Log(mousePos);
             Vector3 direction = new Vector2(mousePos.x, mousePos.y) - _rigidBody.position;
             direction = direction.normalized;
 
@@ -80,6 +85,11 @@ public class SubmarineMovement : MonoBehaviour
         _maxSpeed += upgrade;
         _accelerationSpeed += upgrade * 0.4f;
         return _maxSpeed;
+    }
+
+    public void Die()
+    {
+        _dead = true;
     }
 
     #region Shopping

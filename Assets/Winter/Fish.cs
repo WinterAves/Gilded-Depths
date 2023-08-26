@@ -226,7 +226,7 @@ namespace Winter.FishAI
 
             else
             {
-                Debug.Log("Improving");
+                //Debug.Log("Improving");
 
                 timer += Time.deltaTime;
 

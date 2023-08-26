@@ -36,4 +36,12 @@ public class Sonar : MonoBehaviour
         if (_expansion >= _expansionLimit)
             Destroy(gameObject);
     }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.gameObject.tag == "Treasure")
+        {
+            collision.GetComponent<Chest>().ActivateChest();
+        }
+    }
 }
