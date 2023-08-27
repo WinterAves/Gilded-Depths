@@ -8,6 +8,8 @@ public class SubmarineStatus : MonoBehaviour
 {
     public static SubmarineStatus Instance { get; private set; }
 
+    [SerializeField] private AudioSource _hitSound;
+    [SerializeField] private AudioSource _treasureSound;
     [SerializeField] private TextMeshProUGUI _hullDisplay;
     [SerializeField] private TextMeshProUGUI _moneyDisplay;
     [SerializeField] private Slider _oxygenMeter;
@@ -49,6 +51,8 @@ public class SubmarineStatus : MonoBehaviour
 
     void Update()
     {
+        if (_dead) return;
+
         if (!_refillingOxygen && !_shopping)
             DecreaseOxygen();
         else if (_refillingOxygen)
@@ -63,14 +67,18 @@ public class SubmarineStatus : MonoBehaviour
         if(!_dead)
         {
             _movement.Die();
-            Debug.Log("Dead");
+            GameManager.Instance.GameOver();
+            //Debug.Log("Dead");
         }
     }
 
     #region Hull
     public void TakeDamage(float damage)
     {
+        if (_dead) return;
+
         _hullStrength = Mathf.Clamp(_hullStrength - damage, 0, Mathf.Infinity);
+        _hitSound.Play();
 
         if (_hullStrength == 0) 
             Die();
@@ -128,23 +136,23 @@ public class SubmarineStatus : MonoBehaviour
             case SubmarineUpgrades.UpgradeType.HullUpgrade:
                 _hullStrength += upgrade._HullUpgradeAmount;
                 UpdateHull();
-                Debug.Log($"Hull upgraded, status: {_hullStrength}");
+                //Debug.Log($"Hull upgraded, status: {_hullStrength}");
                 break;
 
             case SubmarineUpgrades.UpgradeType.OxygenUpgrade:
                 _maxOxygen += upgrade._OxygenUpgradeAmount;
                 UpdateOxygenBar();
-                Debug.Log($"Oxygen tank upgraded, status: {_maxOxygen}");
+                //Debug.Log($"Oxygen tank upgraded, status: {_maxOxygen}");
                 break;
 
             case SubmarineUpgrades.UpgradeType.SonarUpgrade:
                 _sonarRange += upgrade._SonarUpgradeAmount;
-                Debug.Log($"Sonar upgraded, status: {_sonarRange}");
+                //Debug.Log($"Sonar upgraded, status: {_sonarRange}");
                 break;
 
             case SubmarineUpgrades.UpgradeType.SpeedUpgrade:
                 float newSpeed = _movement.UpgradeSpeed(upgrade._SpeedUpgradeAmount);
-                Debug.Log($"Speed upgraded, status: {newSpeed}");
+                //Debug.Log($"Speed upgraded, status: {newSpeed}");
                 break;
         }
     }
@@ -165,6 +173,7 @@ public class SubmarineStatus : MonoBehaviour
     private void AddMoney()
     {
         _money += _moneyIncreaseAmount;
+        _treasureSound.Play();
         UpdateMoney();
     }
 
@@ -229,6 +238,13 @@ public class SubmarineStatus : MonoBehaviour
                 Destroy(collision.gameObject);
                 AddMoney();
             }
+        }
+
+        if (collision.gameObject.tag == "Goal")
+        {
+            GameManager.Instance.Win();
+            _dead = true;
+            _movement.Die();
         }
     }
 

@@ -11,6 +11,7 @@ TagManager:
   - Treasure
   - Fish
   - Shark
+  - Goal
   layers:
   - Default
   - TransparentFX

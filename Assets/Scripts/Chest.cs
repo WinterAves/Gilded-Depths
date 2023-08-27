@@ -22,7 +22,7 @@ public class Chest : MonoBehaviour
     {
         if (_activated) return;
 
-        Debug.Log("Chest Detected");
+        //Debug.Log("Chest Detected");
         Color c = _chestMaterial.color;
         _chestMaterial.color = new Color(c.r, c.g, c.b, 1f);
         _chestMaterial.EnableKeyword("_EMISSION");

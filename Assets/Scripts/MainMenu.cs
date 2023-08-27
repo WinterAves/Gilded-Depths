@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class MainMenu : MonoBehaviour
 {
     [SerializeField] private AudioSource _blip;
+    [SerializeField] private Animator _animator;
 
     public void Play()
     {
@@ -15,6 +16,13 @@ public class MainMenu : MonoBehaviour
 
     public void DisplayCredits()
     {
+        _animator.SetTrigger("SlideIn");
+        PlayBlip();
+    }
+
+    public void CloseCredits()
+    {
+        _animator.SetTrigger("SlideOut");
         PlayBlip();
     }
 

@@ -35,8 +35,6 @@ public class SubmarineMovement : MonoBehaviour
     {
         Vector3 mousePos = Vector3.zero;
 
-        //Debug.Log(_rigidBody.velocity);
-
         _accelerating = false;
 
         if (Input.GetKey(KeyCode.Mouse0))
@@ -53,7 +51,7 @@ public class SubmarineMovement : MonoBehaviour
             }
 
             _accelerating = true;
-            Debug.DrawRay(transform.position, direction * 5f, Color.red);
+            //Debug.DrawRay(transform.position, direction * 5f, Color.red);
         }
     }
 
@@ -89,6 +87,7 @@ public class SubmarineMovement : MonoBehaviour
     public void Die()
     {
         _dead = true;
+        _rigidBody.velocity = Vector3.zero;
     }
 
     #region Shopping
