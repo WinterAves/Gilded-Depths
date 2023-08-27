@@ -44,7 +44,7 @@ namespace Winter.FishAI
             var dir = refPlayer.position - transform.position; 
             dir.Normalize();
            
-            rb.velocity = new Vector2(dir.x, dir.y) * 2f * Mathf.Sin(10f * Time.time);
+            rb.velocity = new Vector2(dir.x, dir.y) * 8f * Mathf.Sin(10f * Time.time);
         }
 
         protected override void OnIdle()
