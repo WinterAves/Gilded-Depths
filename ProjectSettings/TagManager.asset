@@ -9,6 +9,8 @@ TagManager:
   - OxygenRefill
   - Shop
   - Treasure
+  - Fish
+  - Shark
   layers:
   - Default
   - TransparentFX

@@ -34,6 +34,7 @@ public class SubmarineStatus : MonoBehaviour
     [SerializeField] private int _moneyIncreaseAmount = 50;
 
     private SubmarineMovement _movement;
+    private bool _dead = false;
 
     private void Awake()
     {
@@ -59,7 +60,11 @@ public class SubmarineStatus : MonoBehaviour
 
     public void Die()
     {
-
+        if(!_dead)
+        {
+            _movement.Die();
+            Debug.Log("Dead");
+        }
     }
 
     #region Hull
@@ -180,7 +185,17 @@ public class SubmarineStatus : MonoBehaviour
     {
         if (collision.gameObject.tag == "Obstacle")
         {
-            Debug.Log("Crashed Into Obstacle");
+            TakeDamage(10f);
+        }
+
+        if (collision.gameObject.tag == "Fish")
+        {
+            TakeDamage(5f);
+        }
+
+        if(collision.gameObject.tag == "Shark")
+        {
+            TakeDamage(30f);
         }
         
         if (collision.gameObject.tag == "Shop")

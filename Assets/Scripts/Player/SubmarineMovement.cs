@@ -42,7 +42,6 @@ public class SubmarineMovement : MonoBehaviour
         if (Input.GetKey(KeyCode.Mouse0))
         {
             mousePos = _mainCam.ScreenToWorldPoint(Input.mousePosition);
-            Debug.Log(mousePos);
             Vector3 direction = new Vector2(mousePos.x, mousePos.y) - _rigidBody.position;
             direction = direction.normalized;
 
