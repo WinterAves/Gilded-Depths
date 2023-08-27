@@ -12,6 +12,7 @@ TagManager:
   - Fish
   - Shark
   - Goal
+  - Bounds
   layers:
   - Default
   - TransparentFX
